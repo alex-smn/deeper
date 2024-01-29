@@ -11,7 +11,7 @@ import SwiftUI
 struct deeper_home_assignmentApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            PokedexView()
         }
     }
 }
