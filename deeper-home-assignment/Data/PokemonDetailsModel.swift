@@ -22,15 +22,15 @@ struct PokemonDetailsModel {
     
     init(
         imageUrl: String,
-        abilities: [String],
-        moves: [String],
-        height: Int,
-        hp: Int,
-        attack: Int,
-        defense: Int,
-        specialAttack: Int,
-        specialDefense: Int,
-        speed: Int
+        abilities: [String] = [],
+        moves: [String] = [],
+        height: Int = 0,
+        hp: Int = 0,
+        attack: Int = 0,
+        defense: Int = 0,
+        specialAttack: Int = 0,
+        specialDefense: Int = 0,
+        speed: Int = 0
     ) {
         self.imageUrl = imageUrl
         self.abilities = abilities

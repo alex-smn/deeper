@@ -7,16 +7,24 @@
 
 import Foundation
 import SwiftyJSON
+import CoreData
 
-class MyPokemonDataSource: PokemonListDataSource { // TODO: change data sources
+class MyPokemonDataSource: PokemonListDataSourceProtocol { // TODO: change data sources
     func loadData() -> Result<PokemonListModel, Error> {
-        guard let url = URL(string: Constants.pokedexUrl) else { return .failure(PokedexError.pokedexListNotFound) }
+        let container = NSPersistentContainer(name: "MyPokemon")
+        container.loadPersistentStores { (storeDescription, error) in
+            if let error {
+                print(error)
+            }
+        }
         
         do {
-            let data = try Data(contentsOf: url)
-            let json = try JSON(data: data)
-            let model = PokemonListModel(json)
+            let request = NSFetchRequest<MyPokemonData>(entityName: "MyPokemonData")
+            let items = try container.viewContext.fetch(request)
             
+            let model = PokemonListModel(pokemonEntries: items.map {
+                PokemonModel(entryNumber: Int($0.number), name: $0.name ?? "", infoUrl: "", details: PokemonDetailsModel(imageUrl: $0.imageUrl?.absoluteString ?? ""))
+            })
             return .success(model)
         } catch {
             return .failure(error)

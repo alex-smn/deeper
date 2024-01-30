@@ -9,42 +9,51 @@ import SwiftUI
 import Kingfisher
 
 struct PokemonInfoView: View {
-    @ObservedObject var model: PokemonModel
+    var viewModel: PokemonInfoViewModel
+    
     @Environment(\.presentationMode) var presentationMode
+    
     @State private var hideTabBar = true
+    @State private var showingAlert = false
+    @State private var nickname = ""
     
     var body: some View {
         NavigationView {
-            if let details = model.details {
+            if let details = viewModel.model.details {
                 ZStack {
                     Color(.lightGray).ignoresSafeArea()
                     
                     VStack(alignment: .center) {
-                        HStack {
-                            Spacer()
-                            Button(action: {
-                                hideTabBar = false
-                                presentationMode.wrappedValue.dismiss()
-                            }) {
-                                Image(systemName: "xmark")
-                                    .resizable()
-                                    .frame(width: 18, height: 18)
-                                    .foregroundColor(.black)
+                        
+                        ZStack {
+                            HStack {
+                                Text(String(viewModel.model.entryNumber))
+                                Text(viewModel.model.name)
                             }
-                            .padding(.top, 30.0)
+                            HStack {
+                                Spacer()
+                                Button(action: {
+                                    hideTabBar = false
+                                    presentationMode.wrappedValue.dismiss()
+                                }) {
+                                    Image(systemName: "xmark")
+                                        .resizable()
+                                        .frame(width: 18, height: 18)
+                                        .foregroundColor(.black)
+                                }
+                            }
                             .padding(.trailing, 30.0)
                         }
+                        .padding(.top, 30.0)
                         
                         Spacer()
-                        
-                        HStack {
-                            Text(String(model.entryNumber))
-                            Text(model.name)
-                        }
                         
                         if let url = URL(string: details.imageUrl) {
                             KFImage(url)
                         }
+                        
+                        Spacer()
+                        
                         HStack {
                             Text("Height: \(details.height)")
                             Text("HP: \(details.hp)")
@@ -82,8 +91,13 @@ struct PokemonInfoView: View {
                         Spacer()
                         
                         Button("Save") {
-                            print("Saved")
+                            showingAlert.toggle()
                         }
+                        .alert("Enter your pokemon nickname", isPresented: $showingAlert) {
+                            TextField("Enter your pokemon nickname", text: $nickname)
+                            Button("Save", action: save)
+                        }
+
                         .frame(height: 40)
                         .frame(maxWidth: .infinity)
                         .background(Color.green)
@@ -97,10 +111,30 @@ struct PokemonInfoView: View {
                     VStack {
                         RoundedRectangle(cornerRadius: 12).foregroundColor(.gray)
                     }
+                    
+                    VStack {
+                        HStack {
+                            Spacer()
+                            Button(action: {
+                                hideTabBar = false
+                                presentationMode.wrappedValue.dismiss()
+                            }) {
+                                Image(systemName: "xmark")
+                                    .resizable()
+                                    .frame(width: 18, height: 18)
+                                    .foregroundColor(.black)
+                            }
+                        }
+                        
+                        Spacer()
+                    }
+                    .padding(.top, 30.0)
+                    .padding(.trailing, 30.0)
+                    
                     VStack(alignment: .center) {
                         HStack {
-                            Text(String(model.entryNumber))
-                            Text(model.name)
+                            Text(String(viewModel.model.entryNumber))
+                            Text(viewModel.model.name)
                         }
                     }
                 }
@@ -109,13 +143,15 @@ struct PokemonInfoView: View {
         .navigationBarHidden(true)
         .toolbar(hideTabBar ? .hidden : .visible, for: .tabBar) // TODO: animation
     }
+    
+    func save() {
+        viewModel.savePokemon(viewModel.model, nickname: nickname)
+    }
 }
 
 struct PokemonInfoView_Previews: PreviewProvider {
     static var previews: some View {
-        
-        
-        PokemonInfoView(model: PokemonModel.preview)
+        PokemonInfoView(viewModel: PokemonInfoViewModel(model: PokemonModel.preview, dataSource: PokemonInfoDataSource()))
     }
 }
 

@@ -7,7 +7,7 @@
 
 import Foundation
 
-protocol PokemonListDataSource {
+protocol PokemonListDataSourceProtocol {
     func loadData() -> Result<PokemonListModel, Error>
     func loadDetails(for pokemon: PokemonModel) -> Result<PokemonDetailsModel, Error>
 }

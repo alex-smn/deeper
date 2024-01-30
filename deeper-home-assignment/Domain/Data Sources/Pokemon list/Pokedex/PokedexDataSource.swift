@@ -8,7 +8,7 @@
 import Foundation
 import SwiftyJSON
 
-class PokedexDataSource: PokemonListDataSource {
+class PokedexDataSource: PokemonListDataSourceProtocol {
     func loadData() -> Result<PokemonListModel, Error> {
         guard let url = URL(string: Constants.pokedexUrl) else { return .failure(PokedexError.pokedexListNotFound) }
         

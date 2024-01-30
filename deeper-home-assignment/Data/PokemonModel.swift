@@ -9,7 +9,7 @@ import Foundation
 import SwiftyJSON
 
 class PokemonModel: Identifiable, ObservableObject {
-    var id: Int { entryNumber }
+    var id = UUID()
     var entryNumber: Int
     var name: String
     var infoUrl: String

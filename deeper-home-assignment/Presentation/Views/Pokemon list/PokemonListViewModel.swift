@@ -11,9 +11,9 @@ import SwiftyJSON
 
 class PokemonListViewModel: ObservableObject {
     @Published var model: PokemonListModel?
-    private let dataSource: PokemonListDataSource
+    private let dataSource: PokemonListDataSourceProtocol
     
-    init(dataSource: PokemonListDataSource) {
+    init(dataSource: PokemonListDataSourceProtocol) {
         self.dataSource = dataSource
         start()
     }
@@ -23,7 +23,7 @@ class PokemonListViewModel: ObservableObject {
     }
     
     func showPokemonInfo(for pokemon: PokemonModel) -> some View {
-        PokemonInfoView(model: pokemon)
+        PokemonInfoView(viewModel: PokemonInfoViewModel(model: pokemon, dataSource: PokemonInfoDataSource()))
     }
     
     func refreshData() {
@@ -40,21 +40,27 @@ class PokemonListViewModel: ObservableObject {
         switch result {
         case .success(let model):
             self.model = model
-            self.loadDetailedData()
         case .failure(let error):
             print(error.localizedDescription)
         }
     }
     
-    private func loadDetailedData() {
+    func pokemonEntryAppeared(_ pokemon: PokemonModel) {
+        loadDetailedData(pokemon)
+    }
+    
+    private func loadDetailedData(_ pokemon: PokemonModel) {
         DispatchQueue.global().async { [weak self] in
-            guard let self, let model = self.model else { return }
-            for pokemon in model.pokemonEntries { // TODO: lazy loading
-                guard pokemon.details == nil else { continue }
-                let result = self.dataSource.loadDetails(for: pokemon)
-                DispatchQueue.main.async { [weak self] in
-                    self?.handleNewDetailedData(result, for: pokemon)
-                }
+            guard
+                let self,
+                pokemon.details == nil
+            else {
+                return
+            }
+
+            let result = self.dataSource.loadDetails(for: pokemon)
+            DispatchQueue.main.async { [weak self] in
+                self?.handleNewDetailedData(result, for: pokemon)
             }
         }
     }

@@ -25,14 +25,19 @@ struct PokemonListView: View {
                     ForEach(viewModel.model?.pokemonEntries ?? []) { entry in
                         NavigationLink(
                             destination: { viewModel.showPokemonInfo(for: entry) },
-                            label: { PokedexEntryView(model: entry)
+                            label: {
+                                PokedexEntryView(model: entry)
                                     .frame(height: height)
+                                    .onAppear { viewModel.pokemonEntryAppeared(entry) }
                             }
                         )
                     }
                 }
                 .padding()
             }
+        }
+        .onAppear {
+            viewModel.refreshData()
         }
     }
 }
