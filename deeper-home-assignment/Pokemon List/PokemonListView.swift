@@ -1,5 +1,5 @@
 //
-//  PokedexView.swift
+//  PokemonListView.swift
 //  deeper-home-assignment
 //
 //  Created by Alexander Livshits on 29/01/2024.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct PokedexView: View {
+struct PokemonListView: View {
     var columns: [GridItem] = [
         GridItem(.flexible()),
         GridItem(.flexible()),
@@ -16,7 +16,7 @@ struct PokedexView: View {
     
     let height: CGFloat = 150
     
-    @ObservedObject var viewModel = PokedexViewModel()
+    @ObservedObject var viewModel: PokemonListViewModel
     
     var body: some View {
         ScrollView {
@@ -31,8 +31,8 @@ struct PokedexView: View {
     }
 }
 
-struct ContentView_Previews: PreviewProvider {
+struct PokemonListView_Previews: PreviewProvider {
     static var previews: some View {
-        PokedexView()
+        PokemonListView(viewModel: PokemonListViewModel(dataSource: PokedexDataSource()))
     }
 }

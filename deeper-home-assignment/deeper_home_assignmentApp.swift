@@ -11,7 +11,17 @@ import SwiftUI
 struct deeper_home_assignmentApp: App {
     var body: some Scene {
         WindowGroup {
-            PokedexView()
+            TabView {
+                PokemonListView(viewModel: PokemonListViewModel(dataSource: PokedexDataSource()))
+                    .tabItem {
+                        Label("All", systemImage: "list.bullet")
+                    }
+
+                PokemonListView(viewModel: PokemonListViewModel(dataSource: MyPokemonDataSource())) 
+                    .tabItem {
+                        Label("Saved", systemImage: "bookmark.fill")
+                    }
+            }
         }
     }
 }
