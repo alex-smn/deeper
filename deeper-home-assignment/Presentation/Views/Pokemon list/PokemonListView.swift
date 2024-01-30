@@ -19,14 +19,20 @@ struct PokemonListView: View {
     @ObservedObject var viewModel: PokemonListViewModel
     
     var body: some View {
-        ScrollView {
-            LazyVGrid(columns: columns, spacing: 16) {
-                ForEach(viewModel.model?.pokemonEntries ?? []) { entry in
-                    PokedexEntryView(model: entry)
-                        .frame(height: height)
+        NavigationView {
+            ScrollView {
+                LazyVGrid(columns: columns, spacing: 16) {
+                    ForEach(viewModel.model?.pokemonEntries ?? []) { entry in
+                        NavigationLink(
+                            destination: { viewModel.showPokemonInfo(for: entry) },
+                            label: { PokedexEntryView(model: entry)
+                                    .frame(height: height)
+                            }
+                        )
+                    }
                 }
+                .padding()
             }
-            .padding()
         }
     }
 }

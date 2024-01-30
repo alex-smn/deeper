@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import SwiftUI
 import SwiftyJSON
 
 class PokemonListViewModel: ObservableObject {
@@ -19,6 +20,10 @@ class PokemonListViewModel: ObservableObject {
     
     func start() {
         refreshData()
+    }
+    
+    func showPokemonInfo(for pokemon: PokemonModel) -> some View {
+        PokemonInfoView(model: pokemon)
     }
     
     func refreshData() {
@@ -44,7 +49,7 @@ class PokemonListViewModel: ObservableObject {
     private func loadDetailedData() {
         DispatchQueue.global().async { [weak self] in
             guard let self, let model = self.model else { return }
-            for pokemon in model.pokemonEntries {
+            for pokemon in model.pokemonEntries { // TODO: lazy loading
                 guard pokemon.details == nil else { continue }
                 let result = self.dataSource.loadDetails(for: pokemon)
                 DispatchQueue.main.async { [weak self] in
