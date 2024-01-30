@@ -13,7 +13,7 @@ struct PokemonInfoView: View {
     
     @Environment(\.presentationMode) var presentationMode
     
-    @State private var hideTabBar = true
+    @State private var hideTabBar = false
     @State private var showingAlert = false
     @State private var nickname = ""
     
@@ -35,7 +35,9 @@ struct PokemonInfoView: View {
                             HStack {
                                 Spacer()
                                 Button(action: {
-                                    hideTabBar = false
+                                    withAnimation {
+                                        hideTabBar = false
+                                    }
                                     presentationMode.wrappedValue.dismiss()
                                 }) {
                                     Image(systemName: "xmark")
@@ -155,7 +157,10 @@ struct PokemonInfoView: View {
             }
         }
         .navigationBarHidden(true)
-        .toolbar(hideTabBar ? .hidden : .visible, for: .tabBar) // TODO: animation
+        .onAppear { withAnimation {
+            hideTabBar = true
+        }}
+        .toolbar(hideTabBar ? .hidden : .visible, for: .tabBar)
     }
     
     func save() {
