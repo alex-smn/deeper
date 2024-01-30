@@ -30,6 +30,9 @@ class PokemonListViewModel: ObservableObject {
     private func handleNewData(_ result: Result<PokemonListModel, Error>) {
         switch result {
         case .success(let model):
+            for pokemon in model.pokemonEntries {
+                pokemon.details = self.model?.pokemonEntries.first(where: { $0.entryNumber == pokemon.entryNumber })?.details
+            }
             self.model = model
         case .failure(let error):
             print(error.localizedDescription)
