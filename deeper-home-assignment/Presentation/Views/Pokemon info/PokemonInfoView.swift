@@ -21,15 +21,17 @@ struct PokemonInfoView: View {
         NavigationView {
             if let details = viewModel.model.details {
                 ZStack {
-                    Color(.lightGray).ignoresSafeArea()
+                    Color(.white).ignoresSafeArea()
                     
                     VStack(alignment: .center) {
                         
                         ZStack {
                             HStack {
                                 Text(String(viewModel.model.entryNumber))
-                                Text(viewModel.model.name)
+                                Text(viewModel.model.name.uppercased())
                             }
+                            .font(.title2)
+                            
                             HStack {
                                 Spacer()
                                 Button(action: {
@@ -68,24 +70,39 @@ struct PokemonInfoView: View {
                         HStack(alignment: .top) {
                             VStack(alignment: .leading) {
                                 Text("Abilities:")
+                                    .padding(.horizontal, 10)
+                                    .padding(.top, 10)
                                 ForEach(details.abilities, id: \.self) { ability in
                                     Text("- \(ability)")
                                 }
+                                .padding(.horizontal, 10)
                             }
-                            .padding(.horizontal)
+                            .padding(.bottom, 10)
+                            .background(Color(red: 0.9, green: 0.9, blue: 0.9))
+                            .cornerRadius(10)
+                            .padding(.horizontal, 20)
+                            
+                            
                             
                             Spacer()
+                                .frame(width: 50)
                             
                             ScrollView {
                                 VStack(alignment: .leading) {
                                     Text("Moves:")
+                                        .padding(.horizontal, 10)
+                                        .padding(.top, 10)
                                     ForEach(details.moves, id: \.self) { move in
                                         Text("- \(move)")
                                     }
+                                    .padding(.horizontal, 10)
                                 }
                             }
                             .frame(maxHeight: 200)
-                            .padding(.horizontal)
+                            .padding(.bottom, 10)
+                            .background(Color(red: 0.9, green: 0.9, blue: 0.9))
+                            .cornerRadius(10)
+                            .padding(.horizontal, 20)
                         }
                         
                         Spacer()
@@ -97,20 +114,17 @@ struct PokemonInfoView: View {
                             TextField("Enter your pokemon nickname", text: $nickname)
                             Button("Save", action: save)
                         }
-
                         .frame(height: 40)
                         .frame(maxWidth: .infinity)
                         .background(Color.green)
                         .cornerRadius(10)
                         .foregroundColor(.black)
-                        .padding(20)
+                        .padding(30)
                     }
                 }
             } else {
                 ZStack {
-                    VStack {
-                        RoundedRectangle(cornerRadius: 12).foregroundColor(.gray)
-                    }
+                    Color(.lightGray).ignoresSafeArea()
                     
                     VStack {
                         HStack {
@@ -171,6 +185,7 @@ extension PokemonModel {
             specialAttack: 75,
             specialDefense: 60,
             speed: 5
-        )
+        ),
+        nickname: "my pokemon"
     )
 }

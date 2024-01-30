@@ -10,19 +10,16 @@ import CoreData
 
 class PokemonInfoDataSource: PokemonInfoDataSourceProtocol {
     func save(pokemon: PokemonModel, nickname: String = "") {
-        let container = NSPersistentContainer(name: "MyPokemon")
+        let container = NSPersistentContainer(name: "Pokemon")
         container.loadPersistentStores { (storeDescription, error) in
             if let error {
                 print(error)
             }
         }
         
-        let myPokemonData = MyPokemonData(context: container.viewContext)
-        
-        myPokemonData.number = Int32(pokemon.entryNumber)
-        myPokemonData.name = pokemon.name
-        myPokemonData.nickname = nickname
-        myPokemonData.imageUrl = (pokemon.details?.imageUrl).flatMap { URL(string: $0) }
+        let pokemonData = pokemon.toCoreData(context: container.viewContext)
+        pokemonData.nickname = nickname
+        pokemonData.isSaved = true
         
         do {
             try container.viewContext.save()

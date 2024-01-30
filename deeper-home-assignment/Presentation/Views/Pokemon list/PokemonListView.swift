@@ -23,14 +23,21 @@ struct PokemonListView: View {
             ScrollView {
                 LazyVGrid(columns: columns, spacing: 16) {
                     ForEach(viewModel.model?.pokemonEntries ?? []) { entry in
-                        NavigationLink(
-                            destination: { viewModel.showPokemonInfo(for: entry) },
-                            label: {
-                                PokedexEntryView(model: entry)
-                                    .frame(height: height)
-                                    .onAppear { viewModel.pokemonEntryAppeared(entry) }
-                            }
-                        )
+                        if !entry.isSaved {
+                            NavigationLink(
+                                destination: { viewModel.showPokemonInfo(for: entry) },
+                                label: {
+                                    PokemonListEntryView(model: entry)
+                                        .frame(height: height)
+                                        .onAppear { viewModel.pokemonEntryAppeared(entry) }
+                                }
+                            )
+                            .foregroundColor(.black)
+                        } else {
+                            PokemonListEntryView(model: entry)
+                                .frame(height: height)
+                                .onAppear { viewModel.pokemonEntryAppeared(entry) }
+                        }
                     }
                 }
                 .padding()

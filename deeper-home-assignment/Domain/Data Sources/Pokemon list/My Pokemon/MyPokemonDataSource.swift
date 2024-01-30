@@ -9,9 +9,20 @@ import Foundation
 import SwiftyJSON
 import CoreData
 
-class MyPokemonDataSource: PokemonListDataSourceProtocol { // TODO: change data sources
-    func loadData() -> Result<PokemonListModel, Error> {
-        let container = NSPersistentContainer(name: "MyPokemon")
+class MyPokemonDataSource: PokemonListDataSourceProtocol {
+    func loadData(completion: @escaping (Result<PokemonListModel, Error>) -> Void) {
+        DispatchQueue.global().async { [weak self] in
+            guard let self else { return }
+            let result = self.loadDataFromStorage()
+            
+            DispatchQueue.main.async {
+                completion(result)
+            }
+        }
+    }
+    
+    private func loadDataFromStorage() -> Result<PokemonListModel, Error> {
+        let container = NSPersistentContainer(name: "Pokemon")
         container.loadPersistentStores { (storeDescription, error) in
             if let error {
                 print(error)
@@ -19,19 +30,29 @@ class MyPokemonDataSource: PokemonListDataSourceProtocol { // TODO: change data 
         }
         
         do {
-            let request = NSFetchRequest<MyPokemonData>(entityName: "MyPokemonData")
+            let request = NSFetchRequest<PokemonData>(entityName: "PokemonData")
+            request.predicate = NSPredicate(format: "isSaved == true")
             let items = try container.viewContext.fetch(request)
             
-            let model = PokemonListModel(pokemonEntries: items.map {
-                PokemonModel(entryNumber: Int($0.number), name: $0.name ?? "", infoUrl: "", details: PokemonDetailsModel(imageUrl: $0.imageUrl?.absoluteString ?? ""))
-            })
+            let model = PokemonListModel(pokemonEntries: items.map { $0.toPokemonModel() })
             return .success(model)
         } catch {
             return .failure(error)
         }
     }
     
-    func loadDetails(for pokemon: PokemonModel) -> Result<PokemonDetailsModel, Error> {
+    func loadDetails(for pokemon: PokemonModel, completion: @escaping (Result<PokemonDetailsModel, Error>) -> Void) {
+        DispatchQueue.global().async { [weak self] in
+            guard let self else { return }
+            let result = loadDetailsFromServer(for: pokemon)
+            
+            DispatchQueue.main.async {
+                completion(result)
+            }
+        }
+    }
+    
+    private func loadDetailsFromServer(for pokemon: PokemonModel) -> Result<PokemonDetailsModel, Error> {
         guard
             let url = URL(string: Constants.pokemonUrlFormat + pokemon.name)
         else {
@@ -48,5 +69,4 @@ class MyPokemonDataSource: PokemonListDataSourceProtocol { // TODO: change data 
             return .failure(error)
         }
     }
-    
 }

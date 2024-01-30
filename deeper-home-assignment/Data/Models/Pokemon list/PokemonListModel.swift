@@ -12,7 +12,7 @@ struct PokemonListModel {
     var pokemonEntries: [PokemonModel]
     
     init(pokemonEntries: [PokemonModel]) {
-        self.pokemonEntries = pokemonEntries
+        self.pokemonEntries = pokemonEntries.sorted(by: { $0.entryNumber < $1.entryNumber })
     }
     
     init(_ json: JSON) {

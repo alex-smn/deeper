@@ -8,6 +8,6 @@
 import Foundation
 
 protocol PokemonListDataSourceProtocol {
-    func loadData() -> Result<PokemonListModel, Error>
-    func loadDetails(for pokemon: PokemonModel) -> Result<PokemonDetailsModel, Error>
+    func loadData(completion: @escaping (Result<PokemonListModel, Error>) -> Void)
+    func loadDetails(for pokemon: PokemonModel, completion: @escaping (Result<PokemonDetailsModel, Error>) -> Void)
 }
