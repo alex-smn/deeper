@@ -12,12 +12,12 @@ struct deeper_home_assignmentApp: App {
     var body: some Scene {
         WindowGroup {
             TabView {
-                PokemonListView(viewModel: PokemonListViewModel(dataSource: PokedexDataSource()))
+                PokedexView(viewModel: PokedexViewModel(repository: PokedexRepository()))
                     .tabItem {
-                        Label("All", systemImage: "list.bullet")
+                        Label("All", systemImage: "bookmark.fill")
                     }
 
-                PokemonListView(viewModel: PokemonListViewModel(dataSource: MyPokemonDataSource())) 
+                MyPokemonView(viewModel: MyPokemonViewModel(repository: MyPokemonRepository()))
                     .tabItem {
                         Label("Saved", systemImage: "bookmark.fill")
                     }

@@ -15,16 +15,8 @@ extension PokemonData {
     }
 
     @NSManaged public var number: Int32
-    @NSManaged public var name: String?
     @NSManaged public var nickname: String?
-    @NSManaged public var isSaved: Bool
-    @NSManaged public var infoUrl: URL?
+    @NSManaged public var id: UUID
 }
 
 extension PokemonData : Identifiable { }
-
-extension PokemonData {
-    func toPokemonModel() -> PokemonModel {
-        PokemonModel(entryNumber: Int(number), name: name ?? "", infoUrl: infoUrl?.absoluteString ?? "", details: nil, nickname: nickname, isSaved: isSaved)
-    }
-}

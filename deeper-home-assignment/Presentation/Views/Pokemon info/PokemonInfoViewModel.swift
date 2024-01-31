@@ -8,15 +8,44 @@
 import Foundation
 
 class PokemonInfoViewModel {
-    let model: PokemonModel
-    let dataSource: PokemonInfoDataSource
-    
-    init(model: PokemonModel, dataSource: PokemonInfoDataSource) {
-        self.model = model
-        self.dataSource = dataSource
+    enum LoadingState {
+        case loading
+        case completed(PokemonDetails)
+        case notInited
+        case error
     }
     
-    func savePokemon(_ pokemon: PokemonModel, nickname: String = "") {
-        dataSource.save(pokemon: pokemon, nickname: nickname)
+    @Published var state: LoadingState
+    let entryNumber: Int
+    private let repository = PokemonInfoRepository()
+    
+    init(_ entryNumber: Int) {
+        self.entryNumber = entryNumber
+        self.state = .notInited
+        loadData()
+    }
+    
+    private func loadData() {
+        Task { [weak self] in
+            guard let self else { return }
+            
+            do {
+                self.state = .loading
+                let result = try await self.repository.loadDetails(for: entryNumber)
+                await self.handleNewData(result)
+            } catch {
+                print(error.localizedDescription)
+                self.state = .error
+            }
+        }
+    }
+    
+    @MainActor
+    private func handleNewData(_ details: PokemonDetails) {
+        self.state = .completed(details)
+    }
+    
+    func savePokemon(nickname: String) {
+        repository.savePokemon(entryNumber: entryNumber, nickname: nickname)
     }
 }
